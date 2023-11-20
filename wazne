@@ -1,0 +1,374 @@
+package w03;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+
+public class w03 extends JFrame {
+
+	private int rr=0,gg=0,bb=0;
+	private int n=25;
+	private MyComponent komponent;
+	
+	private static class Kolo{
+		static int [] dajX(int xs,int ys,int r,int y){
+			int [] w=new int [2];
+			w[0]=xs-(int)Math.round(Math.sqrt(r*r-(y-ys)*(y-ys)));
+			w[1]=xs+(int)Math.round(Math.sqrt(r*r-(y-ys)*(y-ys)));
+			return w;
+		}
+		static int [] dajY(int xs,int ys,int r,int x){
+			int [] w=new int [2];
+			w[0]=ys-(int)Math.round(Math.sqrt(r*r-(x-xs)*(x-xs)));
+			w[1]=ys+(int)Math.round(Math.sqrt(r*r-(x-xs)*(x-xs)));
+			return w;
+		}
+	}
+	
+	private class MyComponent extends JComponent{
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			g.setColor(new Color(rr,gg,bb));
+			int w=getWidth();
+			int h=getHeight();
+			int r=h/6;
+			g.drawArc(0-r, 0-r, 2*r, 2*r, 0, -90);
+			g.drawArc(w/2-r, h/2-r, 2*r, 2*r, 90, 270);
+			g.drawLine(w/2, 0, w/2, h/2-r);
+			g.drawLine(w/2+r, h/2, w, h/2);
+			
+			for(int i=0;i<n;i++){
+				/*int x=w*i/n;
+				if(x<r)
+					g.drawLine(x, h, x, Kolo.dajY(0, 0, r, x)[1]);
+				else if(x<w/2-r)
+					g.drawLine(x, 0, x, h);
+				else if(x<w/2){
+					g.drawLine(x, 0, x, Kolo.dajY(w/2, h/2, r, x)[0]);
+					g.drawLine(x, h, x, Kolo.dajY(w/2, h/2, r, x)[1]);
+				}else if(x<w/2+r)
+					g.drawLine(x, h, x, Kolo.dajY(w/2, h/2, r, x)[1]);
+				else
+					g.drawLine(x, h/2, x, h);
+				*/
+				int y=h*i/n;
+				if(y<r){
+					g.drawLine(0, y, Kolo.dajX(0, 0, r, y)[1], y);
+					//g.drawLine(w/2, y, w, y);
+				}
+				else if(y<h/2-r)
+					g.drawLine(w/2, y, w, y);
+				//else if(y<h/2)
+					//g.drawLine(Kolo.dajX(w/2, h/2, r, y)[0], y, w, y);
+				//else if(y<h/2+r)
+					//g.drawLine(Kolo.dajX(w/2, h/2, r, y)[0], y, Kolo.dajX(w/2, h/2, r, y)[1], y);
+			}
+			super.paintComponent(g);
+		}
+		
+	}
+	public w03(String string) {
+		super(string);
+		Toolkit kit=Toolkit.getDefaultToolkit();
+		Dimension d=kit.getScreenSize();
+		setBounds(d.width/6,d.height/6,d.width*2/3,d.height*2/3);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		add(komponent=new MyComponent());
+		JPanel panel=new JPanel(new BorderLayout());
+		add(panel,BorderLayout.SOUTH);
+		final JSlider slider=new JSlider(3,100,n);
+		slider.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				n=slider.getValue();
+				komponent.repaint();
+			}
+		});
+		panel.add(slider);
+		JPanel panelC=new JPanel();
+		final JCheckBox cbR=new JCheckBox("R");
+		cbR.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				rr=(cbR.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbR);
+		final JCheckBox cbG=new JCheckBox("G");
+		cbG.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				gg=(cbG.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbG);
+		final JCheckBox cbB=new JCheckBox("B");
+		cbB.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				bb=(cbB.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbB);
+		panel.add(panelC,BorderLayout.EAST);
+		setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				new w03("w03");
+			}
+		});
+	}
+
+}
+________________________________
+package w01;
+
+import java.awt.*;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+
+public class w01 extends JFrame {
+
+	//x=xs+-(int)Math.round(Math.sqrt(r^2-(y-ys)^2))
+	//y=ys+-sqrt(r^2-(x-xs)^2)
+	
+	private int rr=0,gg=0,bb=0;
+	private int n=5;
+	private MyComponent komponent;
+	
+	private static class Kolo{
+		static int []  dajX(int xs,int ys,int r,int y){
+			int [] w=new int [2];
+			w[0]=xs-(int)Math.round(Math.sqrt(r*r-(y-ys)*(y-ys)));
+			w[1]=xs+(int)Math.round(Math.sqrt(r*r-(y-ys)*(y-ys)));
+			return w;
+		}
+		static int []  dajY(int xs,int ys,int r,int x){
+			int [] w=new int [2];
+			w[0]=ys-(int)Math.round(Math.sqrt(r*r-(x-xs)*(x-xs)));
+			w[1]=ys+(int)Math.round(Math.sqrt(r*r-(x-xs)*(x-xs)));
+			return w;
+		}
+	}
+	private class MyComponent extends JComponent{
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			int w=getWidth();
+			int h=getHeight();
+			int r=h/6;
+			g.setColor(new Color(rr,gg,bb));
+			g.drawLine(0, 0, w/3, h*2/3);
+			g.drawLine(w/3, h*2/3, w*2/3, h/3);
+			g.drawLine(w*2/3, h/3, w, h);
+			g.drawOval(w/3-r, h/3-r, 2*r, 2*r);
+			g.drawOval(w*2/3-r, h*2/3-r, 2*r, 2*r);
+			for(int i=0;i<n;i++){
+				int y=h*i/n;
+				if(y<h/3)
+					g.drawLine(0, y, w/2*i/n, y);
+				else if(y<h*2/3-r){
+					g.drawLine(0, y, w/2*i/n, y);
+					g.drawLine(w-w*i/n, y, w/2+w/2*i/n, y);
+				}else if(y<h*2/3){
+					g.drawLine(0, y, w/2*i/n, y);
+					g.drawLine(w-w*i/n, y, Kolo.dajX(w*2/3, h*2/3, r, y)[0], y);
+					g.drawLine(Kolo.dajX(w*2/3, h*2/3, r, y)[1], y, w/2+w/2*i/n, y);
+				}else if(y<h*2/3+r){
+					g.drawLine(0, y, Kolo.dajX(w*2/3, h*2/3, r, y)[0], y);
+					g.drawLine(Kolo.dajX(w*2/3, h*2/3, r, y)[1], y, w/2+w/2*i/n, y);
+				}else
+					g.drawLine(0, y, w/2+w/2*i/n, y);
+				
+				if(y>h/3-r && y<h/3+r)
+					g.drawLine(Kolo.dajX(w/3,h/3,r,y)[0], y, Kolo.dajX(w/3,h/3,r,y)[1], y);
+				
+				
+			}
+			
+			/*for(int i=0;i<n;i++){
+				int x=w*i/n;
+				if(x<w/3)
+					g.drawLine(x, h, x,2*h*i/n );
+				else if(x<w*2/3-r){
+					g.drawLine(x, h, x,h-h*i/n);
+					//g.drawLine(w-w*i/n, x, w/2+w/2*i/n, x);
+				}
+				else if(x<w*2/3){
+					g.drawLine(x, h, x,Kolo.dajY(w*2/3, h*2/3, r, x)[1]);
+					g.drawLine(x, Kolo.dajY(w*2/3, h*2/3, r, x)[0],x, h-h*i/n);
+					//g.drawLine(Kolo.dajX(w*2/3, h*2/3, r, x)[1], x, w/2+w/2*i/n, x);
+				}
+				else if(x<w*2/3+r){
+					g.drawLine(x, h,x,  Kolo.dajY(w*2/3, h*2/3, r, x)[1]);
+					g.drawLine(x,Kolo.dajY(w*2/3, h*2/3, r, x)[0],x,2*(h*i/n)-h);
+				}
+				else
+					g.drawLine(x, h, x, 2*(h*i/n)-h);
+				if(x>w/3-r && x<w/3+r)
+					g.drawLine(x,Kolo.dajY(w/3,h/3,r,x)[0], x, Kolo.dajY(w/3,h/3,r,x)[1]);
+			}*/
+			
+		/*Polygon p=new Polygon();
+		p.addPoint(w/2,0);
+		p.addPoint(w/2,h);
+		p.addPoint(0,h/2);
+		g.drawPolygon(p);
+		g.drawLine(0,0,w/2,h/2);
+		g.drawLine(0,h,w/2,h/2);*/
+			for(int i=0;i<n;i++)
+			g.drawLine(w,h*i/(n-1)/2+h/2, w/2, h);
+			
+			g.drawLine(w/2,h, w, h);
+			super.paintComponent(g);
+		}
+		
+	}
+	public w01(String string) {
+		super(string);
+		Toolkit kit=Toolkit.getDefaultToolkit();
+		Dimension d=kit.getScreenSize();
+		setBounds(d.width/6, d.height/6, d.width*2/3, d.height*2/3);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		add(komponent=new MyComponent());
+		JPanel panel=new JPanel(new BorderLayout());
+		add(panel,BorderLayout.SOUTH);
+		final JSlider slider=new JSlider(2,20,n);
+		slider.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				n=slider.getValue();
+				komponent.repaint();
+			}
+		});
+		panel.add(slider);
+		JPanel panelC=new JPanel();
+		final JCheckBox cbR=new JCheckBox("R");
+		cbR.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				rr=(cbR.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbR);
+		final JCheckBox cbG=new JCheckBox("G");
+		cbG.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				gg=(cbG.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbG);
+		final JCheckBox cbB=new JCheckBox("B");
+		cbB.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				bb=(cbB.isSelected())?255:0;
+				komponent.repaint();
+			}
+		});
+		panelC.add(cbB);
+		panel.add(panelC,BorderLayout.EAST);
+		setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				new w01("w01");
+			}
+		});
+	}
+
+}
+____________________________________________
+package w14;
+
+/* do listy ksiazki: tytul, autor, rok, strony
+ * sort autor,tytul
+ * filtr rok<od,do> strony <min,max>
+ */
+public class p20 {
+	static class Elem{
+		private String tyt;
+		private String aut;
+		private int rok;
+		private int str;
+		private Elem nast;
+		static Elem dodaj(String tyt,String aut, int rok,int str,Elem lista){
+			Elem q=new Elem();
+			q.tyt=tyt;
+			q.aut=aut;
+			q.rok=rok;
+			q.str=str;
+			q.nast=lista;
+			return q;
+		}
+		static Elem wstaw(String tyt,String aut, int rok,int str,Elem lista){
+			if(lista==null)
+				return dodaj(tyt,aut,rok,str, lista);
+			if(aut.compareTo(lista.aut)>0 || (aut.compareTo(lista.aut)==0 && tyt.compareTo(lista.tyt)>0))
+				return dodaj(tyt,aut,rok,str, lista);
+			
+			
+			if(aut.compareTo(lista.aut)==0 && tyt.compareTo(lista.tyt)==0  &&  str==lista.str && rok==lista.rok)
+			return lista;
+			lista.nast=wstaw(tyt,aut,rok,str,lista.nast);
+			return lista;
+		}
+		public static void wypisz(Elem lista, int rmin, int rmax, int smin, int smax) {
+			while(lista!=null){
+				if(lista.rok>=rmin && lista.rok<=rmax && lista.str>=smin && lista.str<=smax)
+					System.out.println(String.format("%12s%12s%8d%8d", lista.aut,lista.tyt,lista.rok,lista.str));
+				lista=lista.nast;
+			}
+		}
+	}
+	public static void main(String[] args) {
+		Elem lista=null;
+	    char c='k';
+	    int d=4;
+		int rmin=1010,rmax=20020,smin=0,smax=10000;
+		lista=Elem.wstaw("JIPP", "Kowalski"  , 2015, 733, lista);
+		lista=Elem.wstaw("TPI" , "Nowak"     , 2005, 133, lista);
+		lista=Elem.wstaw("ASM" , "Kowalski"  , 2008, 233, lista);
+		lista=Elem.wstaw("PP"  , "Nowak"     , 2021, 333, lista);
+		lista=Elem.wstaw("JAVA", "Malinowski", 2025, 433, lista);
+		lista=Elem.wstaw("C++" , "Kowalski"  , 2003, 633, lista);
+		lista=Elem.wstaw("WF"  , "Kowalski"  , 1997, 833, lista);
+		lista=Elem.wstaw("TZSN", "Kowalski"  , 1876, 933, lista);
+		Elem.wypisz(lista,rmin,rmax,smin,smax);
+	}
+
+}
+___________________________________________________________________________
+
